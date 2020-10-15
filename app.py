@@ -45,9 +45,13 @@ def post_something():
 def get_current_time():
     return {'time': time.time()}
 
+@app.route('/api/db')
+def get_db_version():
+    return {'db': time.time()}
+
 @app.route('/')
 @app.errorhandler(404)
-def index(path):
+def index():
     return app.send_static_file('index.html')
 
 if __name__ == '__main__':
