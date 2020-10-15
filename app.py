@@ -1,3 +1,5 @@
+import os
+import psycopg2
 import time
 from flask import Flask, request, jsonify
 app = Flask(__name__, static_folder='build/', static_url_path='')
@@ -47,7 +49,24 @@ def get_current_time():
 
 @app.route('/api/db')
 def get_db_version():
-    return {'db': time.time()}
+    try:
+        connection = psycopg2.connect(os.environ.get("DATABASE_URL"))
+        cursor = connection.cursor()
+
+        # Print PostgreSQL version
+        cursor.execute("SELECT version();")
+        record = cursor.fetchone()
+
+    except (Exception, psycopg2.Error) as error :
+        print ("Error while connecting to PostgreSQL", error)
+    finally:
+        #closing database connection.
+            if(connection):
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
+    return {'db': record}
 
 @app.route('/', defaults={'path': ''})
 @app.errorhandler(404)
