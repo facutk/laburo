@@ -1,6 +1,6 @@
 import time
-from flask import Flask, request, jsonify
-app = Flask(__name__)
+from flask import Flask, request, jsonify, send_from_directory
+app = Flask(__name__, static_folder='build/', static_url_path='')
 
 @app.route('/getmsg/', methods=['GET'])
 def respond():
@@ -41,14 +41,18 @@ def post_something():
             "ERROR": "no name found, please send a name."
         })
 
-@app.route('/time')
+@app.route('/api/time')
 def get_current_time():
     return {'time': time.time()}
 
 # A welcome message to test our server
 @app.route('/')
 def index():
-    return "<h1>Welcome to our server !!</h1>"
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
