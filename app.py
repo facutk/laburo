@@ -49,9 +49,9 @@ def get_current_time():
 def get_db_version():
     return {'db': time.time()}
 
-@app.route('/')
+@app.route('/', defaults={'path': ''})
 @app.errorhandler(404)
-def index():
+def index(path):
     return app.send_static_file('index.html')
 
 if __name__ == '__main__':
