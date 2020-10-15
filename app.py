@@ -1,5 +1,5 @@
 import time
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 app = Flask(__name__, static_folder='build/', static_url_path='')
 
 @app.route('/getmsg/', methods=['GET'])
@@ -45,11 +45,10 @@ def post_something():
 def get_current_time():
     return {'time': time.time()}
 
-@app.route('/', defaults={'path': ''})
-@app.route("/<string:path>")
-@app.route('/<path:path>')
+@app.route('/')
+@app.errorhandler(404)
 def index(path):
-    return send_from_directory(app.static_folder, 'index.html')
+    return app.send_static_file('index.html')
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
