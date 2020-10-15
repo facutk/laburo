@@ -45,14 +45,11 @@ def post_something():
 def get_current_time():
     return {'time': time.time()}
 
-# A welcome message to test our server
-@app.route('/')
-def index():
-    return send_from_directory(app.static_folder, 'index.html')
-
+@app.route('/', defaults={'path': ''})
+@app.route("/<string:path>")
 @app.route('/<path:path>')
-def static_file(path):
-    return app.send_static_file(path)
+def index(path):
+    return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
