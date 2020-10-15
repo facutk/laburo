@@ -1,3 +1,4 @@
+import time
 from flask import Flask, request, jsonify
 app = Flask(__name__)
 
@@ -39,6 +40,10 @@ def post_something():
         return jsonify({
             "ERROR": "no name found, please send a name."
         })
+
+@app.route('/time')
+def get_current_time():
+    return {'time': time.time()}
 
 # A welcome message to test our server
 @app.route('/')
