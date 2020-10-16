@@ -2,7 +2,51 @@ import os
 import psycopg2
 import time
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+load_dotenv()
+
 app = Flask(__name__, static_folder='build/', static_url_path='')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+from models import User
+
+@app.route('/api/add/')
+def webhook():
+    id = 1
+    name = "ram"
+    email = "ram@ram.com"
+    u = User(id = id, nickname = name, email = email)
+    print("user created", u)
+    db.session.add(u)
+    db.session.commit()
+    return "user created"
+
+@app.route('/api/users')
+def users():
+    id = 1
+    name = "ram"
+    email = "ram@ram.com"
+    u = User(id = id, nickname = name, email = email)
+    print("user created", u)
+    db.session.add(u)
+    db.session.commit()
+    return "user created"
+
+@app.route('/api/user/<nickname>')
+def show_user(nickname):
+    user = User.query.filter_by(nickname=nickname).first_or_404()
+    print(user)
+    return(jsonify(user.serialize))
+
+@app.route('/api/delete/')
+def delete():
+    u = User.query.get(i)
+    db.session.delete(u)
+    db.session.commit()
+    return "user deleted"
 
 @app.route('/getmsg/', methods=['GET'])
 def respond():
@@ -69,7 +113,8 @@ def get_db_version():
     return {'db': record}
 
 @app.route('/', defaults={'path': ''})
-@app.errorhandler(404)
+@app.route('/<string:path>')
+@app.route('/<path:path>')
 def index(path):
     return app.send_static_file('index.html')
 
