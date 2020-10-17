@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="build/", static_url_path="")
 app.config.from_object('config.Config')
 
 db = SQLAlchemy(app)
