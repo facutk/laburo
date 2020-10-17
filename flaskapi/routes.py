@@ -1,11 +1,5 @@
-from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__, static_folder="build", static_url_path="/")
-app.config.from_object('config.Config')
-
-db = SQLAlchemy(app)
-from models import User
+from flask import current_app as app, jsonify, request
+from .models import db, User
 
 @app.route("/api/add/")
 def webhook():
@@ -44,7 +38,6 @@ def heartbeat():
     return jsonify({"status": "ok"})
 
 @app.route("/", defaults={"path": ""})
-@app.errorhandler(404)
 def index(path):
     return app.send_static_file("index.html")
 
@@ -53,6 +46,3 @@ def error_404(e):
     if 'api' in request.url:
         return jsonify(error=str(e.description)), 404
     return app.send_static_file("index.html")
-
-if __name__ == "__main__":
-    app.run()
