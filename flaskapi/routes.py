@@ -1,5 +1,6 @@
 from flask import current_app as app, jsonify, request
 from .models import db, User
+from .utils.lexorank import rank
 import time
 import uuid
 
@@ -49,6 +50,10 @@ def todos():
 @app.route("/api/todos/<todo_id>", methods = ["DELETE"])
 def todo():
   return(jsonify({}))
+
+@app.route("/api/rank/<prev>/<next>")
+def getRank(prev, next):
+  return jsonify({"result": rank(prev, next)})
 
 @app.route("/api/status")
 def heartbeat():
