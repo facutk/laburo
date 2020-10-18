@@ -1,7 +1,6 @@
 from flask import current_app as app, jsonify, request, abort
 from .models import db, User, Todo
 from .utils.lexorank import rank
-import time
 import uuid
 
 @app.route("/api/users_add")
