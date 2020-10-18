@@ -28,30 +28,34 @@ const TodoList = () => {
   const handleAddTodo = (e) => {
     e.preventDefault();
     const newTodo = {
-      description: draft
+      text: draft
+      // add provisional id
     };
-    const newTodos = todos.concat(newTodo);
+
+    const newTodos = [newTodo].concat(todos);
+    setTodos(newTodos);
 
     setIsLoading(true);
     createTodo(newTodo)
       .then((response) => {
         setIsLoading(false);
-        setTodos(response);
+        // Add better handling here
       })
       .catch(() => {
         setIsLoading(false)
       });
 
-    setTodos(newTodos);
+    
     setDraft(DRAFT_EMPTY);
   }
 
   const handleDelete = (todoItem) => {
     setIsLoading(true);
     deleteTodo(todoItem)
-      .then((response) => {
+      .then(() => {
         setIsLoading(false);
-        setTodos(response);
+        const newTodos = todos.filter((todo) => todo.id !== todoItem.id);
+        setTodos(newTodos);
       })
       .catch(() => {
         setIsLoading(false)
@@ -73,7 +77,7 @@ const TodoList = () => {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
-            {todo.description} <button onClick={() => handleDelete(todo)}>-</button>
+            {todo.text} <button onClick={() => handleDelete(todo)}>-</button>
           </li>
         ))}
       </ul>

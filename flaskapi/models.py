@@ -33,3 +33,13 @@ class Todo(db.Model):
 
     def __repr__(self):
         return '<Todo %r>' % (self.text)
+
+    @property
+    def serialize(self):
+       return {
+           'id': self.id,
+           'text': self.text,
+           'rank'  : self.rank,
+           'created'  : self.created,
+           'modified'  : self.modified
+       }

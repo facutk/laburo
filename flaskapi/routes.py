@@ -1,22 +1,11 @@
-from flask import current_app as app, jsonify, request
-from .models import db, User
+from flask import current_app as app, jsonify, request, abort
+from .models import db, User, Todo
 from .utils.lexorank import rank
 import time
 import uuid
 
-@app.route("/api/add/")
-def webhook():
-    id = 1
-    name = "ram"
-    email = "ram@ram.com"
-    u = User(id = id, nickname = name, email = email)
-    print("user created", u)
-    db.session.add(u)
-    db.session.commit()
-    return "user created"
-
-@app.route("/api/users")
-def users():
+@app.route("/api/users_add")
+def users_add():
     id = 1
     name = "ram"
     email = "ram@ram.com"
@@ -36,38 +25,31 @@ todo_list = []
 @app.route("/api/todos", methods = ["GET", "POST"])
 def todos():
   if request.method == "GET":
-    return(jsonify(todo_list))
+    allTodos = [todo.serialize for todo in Todo.query.order_by(Todo.rank.asc()).all()]
+    return(jsonify(allTodos))
+
   if request.method == "POST":
     data = request.get_json(force=True)
 
     prev_rank = ""
     next_rank = ""
-    if len(todo_list):
-      next_rank = todo_list[0]["rank"]
+    first_todo = Todo.query.order_by(Todo.rank.asc()).first()
+    if first_todo:
+      next_rank = first_todo.rank
 
-    new_todo = {
-      "id": str(uuid.uuid4()),
-      "created": time.time(),
-      "description": data["description"],
-      "rank": rank(prev_rank, next_rank)
-    }
-    todo_list.insert(0, new_todo)
-    return(jsonify(todo_list))
+    t = Todo(id = str(uuid.uuid4()), text=data["text"], rank=rank(prev_rank, next_rank))
+    db.session.add(t)
+    db.session.commit()
+
+    return(jsonify(t.serialize))
 
 @app.route("/api/todos/<todo_id>", methods = ["DELETE"])
 def delete_todo(todo_id):
-  todo_index = None
-  for i, todo in enumerate(todo_list):
-    print(i, todo)
-    if todo["id"] == todo_id:
-      todo_index = i
-      break
+  todo = Todo.query.filter_by(id=todo_id).first_or_404("Todo not found")
+  db.session.delete(todo)
+  db.session.commit()
 
-  if todo_index != None:
-    print(todo_list)
-    todo_list.pop(todo_index)
-  
-  return(jsonify(todo_list))
+  return(jsonify(message='ok'))
 
 @app.route("/api/rank/<prev>/<next>")
 def getRank(prev, next):
@@ -84,5 +66,5 @@ def index(path):
 @app.errorhandler(404)
 def error_404(e):
     if 'api' in request.url:
-        return jsonify(error=str(e.description)), 404
+      return jsonify(error=str(e.description)), 404
     return app.send_static_file("index.html")
