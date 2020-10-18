@@ -22,3 +22,14 @@ export const createTodo = (newTodo) =>
       }
       return response.json();
     });
+
+export const deleteTodo = (deletedTodo) => 
+  fetch(`/api/todos/${deletedTodo.id}`, {
+      method: 'DELETE',
+  })
+    .then((response) => {
+      if (!response.ok) {
+          throw Error(response.statusText);
+      }
+      return response.json();
+    });

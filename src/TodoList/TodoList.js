@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { getAllTodos, createTodo } from './api';
+import { getAllTodos, createTodo, deleteTodo } from './api';
 
 const DRAFT_EMPTY = '';
+
 const TodoList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState([]);
@@ -45,6 +46,18 @@ const TodoList = () => {
     setDraft(DRAFT_EMPTY);
   }
 
+  const handleDelete = (todoItem) => {
+    setIsLoading(true);
+    deleteTodo(todoItem)
+      .then((response) => {
+        setIsLoading(false);
+        setTodos(response);
+      })
+      .catch(() => {
+        setIsLoading(false)
+      });
+  }
+
   const addDisabled = !draft || isLoading;
 
   return (
@@ -59,8 +72,8 @@ const TodoList = () => {
 
       <ul>
         {todos.map((todo) => (
-          <li key={todo.description}>
-            {todo.description}
+          <li key={todo.id}>
+            {todo.description} <button onClick={() => handleDelete(todo)}>-</button>
           </li>
         ))}
       </ul>
