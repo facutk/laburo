@@ -1,9 +1,15 @@
-from flask import current_app as app, jsonify, request, abort
+from flask import current_app as app, jsonify, request
 from .models import db, User, Todo
 from .utils.lexorank import rank
 import uuid
 
-@app.route("/api/users_add")
+@app.route("/api/user/<nickname>", methods = ["GET"])
+def show_user(nickname):
+    user = User.query.filter_by(nickname=nickname).first_or_404("user not found")
+    print(user)
+    return(jsonify(user.serialize))
+
+@app.route("/api/user", methods = ["POST"])
 def users_add():
     id = 1
     name = "ram"
@@ -14,13 +20,6 @@ def users_add():
     db.session.commit()
     return "user created"
 
-@app.route("/api/user/<nickname>")
-def show_user(nickname):
-    user = User.query.filter_by(nickname=nickname).first_or_404("user not found")
-    print(user)
-    return(jsonify(user.serialize))
-
-todo_list = []
 @app.route("/api/todos", methods = ["GET", "POST"])
 def todos():
   if request.method == "GET":
@@ -48,15 +47,11 @@ def delete_todo(todo_id):
   db.session.delete(todo)
   db.session.commit()
 
-  return(jsonify(message='ok'))
-
-@app.route("/api/rank/<prev>/<next>")
-def getRank(prev, next):
-  return jsonify({"result": rank(prev, next)})
+  return(jsonify(message="ok"))
 
 @app.route("/api/status")
-def heartbeat():
-    return jsonify({"status": "ok"})
+def status():
+    return jsonify(status="ok")
 
 @app.route("/", defaults={"path": ""})
 def index(path):
