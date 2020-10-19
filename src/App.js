@@ -65,8 +65,8 @@ const AuthProvider = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const authenticate = async ({ email, password }) => {
-    return fetch('/api/auth/login', {
-      method: 'POST',
+    return fetch("/api/auth/login", {
+      method: "POST",
       body: JSON.stringify({
         email, password
       })
@@ -123,6 +123,12 @@ const PrivateRoute = ({ children, ...rest }) => {
 }
 
 function ProtectedPage() {
+  useEffect(() => {
+    fetch("/api/auth/protected")
+      .then(r => r.json())
+      .then(console.log);
+  }, [])
+  
   return <h3>Protected</h3>;
 }
 
@@ -133,7 +139,7 @@ function LoginPage() {
 
   const { from } = location.state || { from: { pathname: "/" } };
   const login = () => {
-    authenticate({ email: 'foo', password: 'barx' })
+    authenticate({ email: 'foo', password: 'bar' })
       .then((resp) => {
         history.replace(from);
       })
