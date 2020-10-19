@@ -9,6 +9,7 @@ class Config:
     MAIL_USERNAME = environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = environ.get("MAIL_PASSWORD")
     MAIL_SENDER = environ.get("MAIL_SENDER")
+    MAIL_USE_TLS = True
     SQLALCHEMY_DATABASE_URI = environ.get("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = environ.get("JWT_SECRET_KEY")
