@@ -11,8 +11,10 @@ import {
 
 import Profile from './Profile';
 import TodoList from './TodoList';
+import AuthContext from './AuthContext';
+import AuthProvider from './AuthProvider';
 
-const Main = () => {
+const Home = () => {
   const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,61 +46,6 @@ const Main = () => {
     </div>
   );
 }
-
-const fakeAuth = {
-  isAuthenticated: false,
-  authenticate(cb) {
-    fakeAuth.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
-  },
-  signout(cb) {
-    fakeAuth.isAuthenticated = false;
-    setTimeout(cb, 100);
-  }
-};
-
-const AuthContext = React.createContext();
-
-const AuthProvider = ({
-  children
-}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const authenticate = async ({ email, password }) => {
-    return fetch("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email, password
-      })
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then(() => {
-        setIsAuthenticated(true);
-      });
-  }
-
-  const signout = async () => {
-    setIsAuthenticated(false);
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        authenticate,
-        signout
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
 
 const PrivateRoute = ({ children, ...rest }) => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -132,7 +79,7 @@ function ProtectedPage() {
   return <h3>Protected</h3>;
 }
 
-function LoginPage() {
+const Login = () => {
   const { isAuthenticated, authenticate } = useContext(AuthContext);
   const history = useHistory();
   const location = useLocation();
@@ -164,43 +111,47 @@ function LoginPage() {
   );
 }
 
+const Header = () => {
+  return (
+    <nav>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/profile">Profile</Link>
+        </li>
+        <li>
+          <Link to="/login">Login</Link>
+        </li>
+        <li>
+          <Link to="/protected">Protected Page</Link>
+        </li>
+      </ul>
+    </nav>
+  )
+}
+
 const App = () => {
   return (
     <Router>
       <AuthProvider>
-        <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/profile">Profile</Link>
-              </li>
-              <li>
-                <Link to="/login">Login</Link>
-              </li>
-              <li>
-                <Link to="/protected">Protected Page</Link>
-              </li>
-            </ul>
-          </nav>
+        <Header />
 
-          <Switch>
-            <PrivateRoute path="/protected">
-              <ProtectedPage />
-            </PrivateRoute>
-            <Route path="/login">
-              <LoginPage />
-            </Route>
-            <Route path="/profile">
-              <Profile />
-            </Route>
-            <Route path="/">
-              <Main />
-            </Route>
-          </Switch>
-        </div>
+        <Switch>
+          <PrivateRoute path="/protected">
+            <ProtectedPage />
+          </PrivateRoute>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/profile">
+            <Profile />
+          </Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
       </AuthProvider>
     </Router>
   );
