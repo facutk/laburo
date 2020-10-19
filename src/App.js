@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -57,12 +57,45 @@ const fakeAuth = {
   }
 };
 
-function PrivateRoute({ children, ...rest }) {
+const AuthContext = React.createContext();
+
+const AuthProvider = ({
+  children
+}) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const authenticate = async ({ email, password }) => {
+    // const res = await getToken({ email, password });
+    setIsAuthenticated(true);
+    return new Promise((resolve) => resolve('ok'))
+  }
+
+  const signout = async () => {
+    setIsAuthenticated(false);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        authenticate,
+        signout
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+
+const PrivateRoute = ({ children, ...rest }) => {
+  const { isAuthenticated } = useContext(AuthContext);
+
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        fakeAuth.isAuthenticated ? (
+        isAuthenticated ? (
           children
         ) : (
           <Redirect
@@ -82,15 +115,24 @@ function ProtectedPage() {
 }
 
 function LoginPage() {
-  let history = useHistory();
-  let location = useLocation();
+  const { isAuthenticated, authenticate } = useContext(AuthContext);
+  const history = useHistory();
+  const location = useLocation();
 
-  let { from } = location.state || { from: { pathname: "/" } };
-  let login = () => {
-    fakeAuth.authenticate(() => {
+  const { from } = location.state || { from: { pathname: "/" } };
+  const login = () => {
+    authenticate('foo', 'bar').then((resp) => {
       history.replace(from);
     });
   };
+
+  if (isAuthenticated) {
+    return (
+      <div>
+        You are already logged in
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -103,36 +145,41 @@ function LoginPage() {
 const App = () => {
   return (
     <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/profile">Profile</Link>
-            </li>
-            <li>
-              <Link to="/protected">Protected Page</Link>
-            </li>
-          </ul>
-        </nav>
+      <AuthProvider>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/profile">Profile</Link>
+              </li>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+              <li>
+                <Link to="/protected">Protected Page</Link>
+              </li>
+            </ul>
+          </nav>
 
-        <Switch>
-          <PrivateRoute path="/protected">
-            <ProtectedPage />
-          </PrivateRoute>
-          <Route path="/login">
-            <LoginPage />
-          </Route>
-          <Route path="/profile">
-            <Profile />
-          </Route>
-          <Route path="/">
-            <Main />
-          </Route>
-        </Switch>
-      </div>
+          <Switch>
+            <PrivateRoute path="/protected">
+              <ProtectedPage />
+            </PrivateRoute>
+            <Route path="/login">
+              <LoginPage />
+            </Route>
+            <Route path="/profile">
+              <Profile />
+            </Route>
+            <Route path="/">
+              <Main />
+            </Route>
+          </Switch>
+        </div>
+      </AuthProvider>
     </Router>
   );
 }
