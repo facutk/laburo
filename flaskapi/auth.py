@@ -6,8 +6,8 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from flask_mail import Mail, Message
-mail = Mail(app)
+from flask_mail import Message
+from . import mail
 
 auth = Blueprint("auth", __name__)
 

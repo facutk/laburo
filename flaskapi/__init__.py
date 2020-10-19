@@ -1,9 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 
 db = SQLAlchemy()
 jwt = JWTManager()
+mail = Mail()
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False, static_folder="../build", static_url_path="/")
@@ -11,6 +13,7 @@ def create_app():
 
     db.init_app(app)
     jwt.init_app(app)
+    mail.init_app(app)
 
     with app.app_context():
         from . import error_handler
