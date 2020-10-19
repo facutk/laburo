@@ -1,6 +1,6 @@
 from flask import current_app as app, Blueprint, jsonify, request, abort
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
+    jwt_required, create_access_token,
     jwt_refresh_token_required, create_refresh_token,
     get_jwt_identity, set_access_cookies,
     set_refresh_cookies, unset_jwt_cookies

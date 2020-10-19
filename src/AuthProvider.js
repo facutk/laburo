@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
+import { Splash } from './components';
 import AuthContext from './AuthContext';
 
 const AuthProvider = ({
   children
 }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetch("/api/user/profile")
+      .then((response) => {
+        if (response.ok) {
+          setIsAuthenticated(true);
+        }
+        setIsLoading(false);
+      })
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const authenticate = async ({ email, password }) => {
     return fetch("/api/auth/login", {
@@ -22,7 +35,7 @@ const AuthProvider = ({
       })
       .then(() => {
         setIsAuthenticated(true);
-      });
+      })
   }
 
   const signout = async () => {
@@ -37,7 +50,11 @@ const AuthProvider = ({
         signout
       }}
     >
-      {children}
+      {
+        isLoading
+          ? <Splash />
+          : children
+      }
     </AuthContext.Provider>
   );
 };

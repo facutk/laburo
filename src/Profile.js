@@ -20,8 +20,6 @@ const SignUp = () => {
     })
       .then(r => r.json())
       .then(console.log)
-
-    
   }
 
   const signupDisabled = !email || isLoading;

@@ -134,8 +134,8 @@ const Header = () => {
 
 const App = () => {
   return (
-    <Router>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <Header />
 
         <Switch>
@@ -152,8 +152,8 @@ const App = () => {
             <Home />
           </Route>
         </Switch>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
