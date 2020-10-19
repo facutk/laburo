@@ -65,9 +65,21 @@ const AuthProvider = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const authenticate = async ({ email, password }) => {
-    // const res = await getToken({ email, password });
-    setIsAuthenticated(true);
-    return new Promise((resolve) => resolve('ok'))
+    return fetch('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email, password
+      })
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then(() => {
+        setIsAuthenticated(true);
+      });
   }
 
   const signout = async () => {
@@ -121,9 +133,13 @@ function LoginPage() {
 
   const { from } = location.state || { from: { pathname: "/" } };
   const login = () => {
-    authenticate('foo', 'bar').then((resp) => {
-      history.replace(from);
-    });
+    authenticate({ email: 'foo', password: 'barx' })
+      .then((resp) => {
+        history.replace(from);
+      })
+      .catch(() => {
+        alert("Error")
+      });
   };
 
   if (isAuthenticated) {
