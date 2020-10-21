@@ -64,7 +64,7 @@ def refresh():
     set_access_cookies(resp, access_token)
     return resp, 200
 
-@auth.route('/auth/remove', methods=['POST'])
+@auth.route('/auth/remove', methods=['GET'])
 def logout():
     resp = jsonify({'logout': True})
     unset_jwt_cookies(resp)

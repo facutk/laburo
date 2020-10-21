@@ -40,6 +40,7 @@ const AuthProvider = ({
 
   const signout = async () => {
     setIsAuthenticated(false);
+    fetch('/api/auth/remove')
   };
 
   return (
