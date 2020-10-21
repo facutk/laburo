@@ -1,4 +1,4 @@
-from flask import current_app as app, Blueprint, jsonify, request, abort
+from flask import current_app as app, Blueprint, jsonify, request
 from flask_jwt_extended import (
     jwt_required, create_access_token,
     jwt_refresh_token_required, create_refresh_token,
@@ -75,4 +75,3 @@ def logout():
 def protected():
     username = get_jwt_identity()
     return jsonify({'hello': 'from {}'.format(username)}), 200
-

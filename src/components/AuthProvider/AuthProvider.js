@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { Splash } from './components';
-import AuthContext from './AuthContext';
+import { Splash } from '../../components';
+import { AuthContext } from '../../contexts';
 
 const AuthProvider = ({
   children
