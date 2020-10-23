@@ -11,7 +11,7 @@ const AuthProvider = ({
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("/api/user/profile")
+    fetch('/api/user/profile')
       .then((response) => {
         if (response.ok) {
           setIsAuthenticated(true);
@@ -21,7 +21,7 @@ const AuthProvider = ({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const authenticate = async ({ email, password }) => {
-    return fetch("/api/auth/login", {
+    return fetch('/api/auth/login', {
       method: "POST",
       body: JSON.stringify({
         email, password
